@@ -1,0 +1,33 @@
+version: "3.8"
+
+services:
+    server:
+        build: .
+        ports:
+            - "3000:3000"
+        depends_on:
+            - database
+        environment:
+            - PGHOST=database
+            - PGUSER=postgres
+            - PGDATABASE=postgres
+            - PGPASSWORD=postgres
+        secrets:
+            - db_password
+
+    database:
+        image: postgres:13
+        environment:
+            - POSTGRES_USER=postgres
+            - POSTGRES_PASSWORD_FILE=/run/secrets/db_password
+        volumes:
+            - "postgres-data:/var/lib/postgresql/data"
+        secrets:
+            - db_password
+
+volumes:
+    postgres-data:
+
+secrets:
+    db_password:
+        file: ./secrets/db_password.txt
